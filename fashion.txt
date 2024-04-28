@@ -1,0 +1,97 @@
+from tensorflow.keras.datasets import fashion_mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, MaxPooling2D, Conv2D
+from tensorflow.keras import losses, optimizers, metrics
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Step 1: Load Fashion MNIST Data
+(train_x, train_y), (test_x, test_y) = fashion_mnist.load_data()
+
+# Step 2: Normalize Data and Add Channel Dimension
+train_x = train_x.astype(np.float32) / 255.0 #The pixel values are divided by 255.0 to scale them between 0 and 1,
+test_x = test_x.astype(np.float32) / 255.0
+train_x = train_x.reshape(-1, 28, 28, 1)  # Add channel dimension
+test_x = test_x.reshape(-1, 28, 28, 1)
+
+# Step 3: Create the CNN Model
+model = Sequential([
+    Conv2D(64, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# Step 4: Compile and Train the Model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_x, train_y, epochs=5, validation_split=0.2, verbose=1)
+model.summary()
+
+# Step 5: Evaluate the Model
+loss, acc = model.evaluate(test_x, test_y)
+print(f"Test loss: {loss}, Test accuracy: {acc}")
+
+# Step 6: Make Predictions and Display Results
+labels = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
+predictions = model.predict(test_x[:1])
+predicted_label = labels[np.argmax(predictions)]
+
+print(f"Predicted label: {predicted_label}")
+
+# Display the first test image with its predicted label
+plt.imshow(test_x[0].reshape(28, 28))
+plt.title(f"Predicted: {predicted_label}")
+plt.show()
+
+
+----------------
+
+import pandas as pd
+import numpy as np
+
+train = pd.read_csv("C:/Users/riyam/Downloads/LP5_riya/fashion-mnist_train.csv")
+test = pd.read_csv("C:/Users/riyam/Downloads/LP5_riya/fashion-mnist_test.csv")
+train_x = train.drop(['label'],axis=1)
+train_y = train['label']
+test_x = test.drop(['label'],axis=1)
+test_y = test['label']
+test_x
+
+# Step 2: Normalize Data and Add Channel Dimension
+train_x = train_x.astype('float32') / 255.0 #The pixel values are divided by 255.0 to scale them between 0 and 1,
+test_x = test_x.astype('float32') / 255.0
+train_x = train_x.values.reshape(-1, 28, 28, 1)  # Add channel dimension
+test_x = test_x.values.reshape(-1, 28, 28, 1)
+
+# Step 3: Create the CNN Model
+model = Sequential([
+    Conv2D(64, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    MaxPooling2D((2, 2)),
+    Flatten(),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
+])
+
+# Step 4: Compile and Train the Model
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.fit(train_x, train_y, epochs=5, validation_split=0.2, verbose=1)
+model.summary()
+
+# Step 5: Evaluate the Model
+loss, acc = model.evaluate(test_x, test_y)
+print(f"Test loss: {loss}, Test accuracy: {acc}")
+
+# Step 6: Make Predictions and Display Results
+labels = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat', 'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']
+
+predictions = model.predict(test_x[:1])
+predicted_label = labels[np.argmax(predictions)]
+
+print(f"Predicted label: {predicted_label}")
+
+# Display the first test image with its predicted label
+plt.imshow(test_x[0].reshape(28, 28))
+plt.title(f"Predicted: {predicted_label}")
+plt.show()
