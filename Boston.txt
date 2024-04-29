@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Input, Dense
+from tensorflow.keras import losses, metrics
+
+# Step 1: Load and Prepare Data
+data = pd.read_csv("/content/HousingData.csv")
+df.head()
+
+df.columns
+
+df.isna().sum()
+
+df.describe()
+
+data.fillna(data.mean(), inplace=True)  # Fill missing values with column means
+
+#or use this
+
+#for i in df.columns:
+#    mean_value = df[i].mean()  # Calculate the mean
+ #   df[i] = df[i].fillna(mean_value)
+
+df.isna().sum()
+
+df.head()
+
+
+# Step 2: Dataset Splitting
+X = data.drop(columns=['MEDV'])
+y = data['MEDV']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=123)
+
+# Step 3: Data Scaling
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)  # Fit and transform on training data
+X_test = scaler.transform(X_test)  # Transform test data
+
+# Step 4: Create and Compile Model
+model = Sequential([
+    Input(shape=(13,), name='input_layer'),
+    Dense(128, activation='relu', name='dense_1'),
+    Dense(64, activation='relu', name='dense_2'),
+    Dense(1, activation='linear', name='dense_output'),
+])
+
+model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+model.summary()
+
+
+# Step 5: Train Model
+model.fit(X_train, y_train, epochs=150, validation_split=0.05, verbose=1)
+
+# Step 6: Evaluate Model
+mse, mae = model.evaluate(X_test, y_test)
+print(f'Mean Squared Error: {mse}')
+print(f'Mean Absolute Error: {mae}')
